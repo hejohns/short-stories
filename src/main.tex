@@ -1,0 +1,668 @@
+% NOTE: based off kaobook minimal_book example
+%%%%%%%%%%
+% Load the kaobook class
+\documentclass[
+	fontsize=10pt, % Base font size
+	twoside=false, % Use different layouts for even and odd pages (in particular, if twoside=true, the margin column will be always on the outside)
+	%open=any, % If twoside=true, uncomment this to force new chapters to start on any page, not only on right (odd) pages
+	secnumdepth=-1, % How deep to number headings. Defaults to 1 (sections)
+]{kaobook}
+
+% Choose the language
+\usepackage[english]{babel} % Load characters and hyphenation
+\usepackage[english=american]{csquotes}	% English quotes
+
+% Load packages for testing
+\usepackage{blindtext}
+%\usepackage{showframe} % Uncomment to show boxes around the text area, margin, header and footer
+%\usepackage{showlabels} % Uncomment to output the content of \label commands to the document where they are used
+
+% Load the bibliography package
+\usepackage{kaobiblio}
+\addbibresource{minimal.bib} % Bibliography file
+
+% Load mathematical packages for theorems and related environments
+\usepackage{kaotheorems}
+
+% Load the package for hyperreferences
+\usepackage{kaorefs}
+
+\graphicspath{{images/}{./}} % Paths where images are looked for
+
+\makeindex[columns=3, title=Alphabetical Index, intoc] % Make LaTeX produce the files required to compile the index
+
+
+% my additional preamble stuff
+\usepackage{hejohns-fonts} % my own font stuff
+\usepackage{hejohns-colors}
+\usepackage{attachfile2}
+\NewDocumentCommand{\Index}{m}{\index{\lowercase{#1}}\purple{#1}}
+\pgfkeys{%
+    /Entry/.is family,
+    /Entry,
+    % NOTE: default is different from .default
+    default/.style = {
+        tags = ,
+        date = \today,
+    },
+    % can be anything since we always use default style
+    tags/.initial,
+    date/.initial,
+}
+\NewDocumentCommand{\Entry}{O{}m}{%
+    \pgfkeys{/Entry, default, #1}%
+    \section{#2}
+    \textbf{Tags: }\blue{\pgfkeysvalueof{/Entry/tags}}
+
+    \textbf{Date: }\pgfkeysvalueof{/Entry/date}
+
+}
+\NewDocumentCommand{\Paper}{O{}mmm}{%{year}{author}{title}
+    \Entry[#1]{#2 - #3, \textit{#4}}
+}
+\NewDocumentCommand{\Book}{O{}mmm}{%{year}{author}{title}
+    \Entry[#1]{#2 - #3, \textit{#4}}
+}
+\NewDocumentCommand{\Video}{O{}mmmm}{%{year}{speaker}{title/topic}{link}
+    \Entry[#1]{#2 - #3, \textit{#4}}
+    \textbf{Link: }\href{#5}{recording}
+
+}
+\NewDocumentCommand{\Dict}{O{}m}{\Entry[#1]{\Index{#2}}}%{term}
+\NewDocumentCommand{\See}{}{\textbf{See: }}
+\newtheoremstyle{break}% https://tex.stackexchange.com/a/37805
+{}%
+{}%
+{}%
+{}%
+{\bfseries}%
+{}%
+{\newline}%
+{}%
+\theoremstyle{break}
+\newtheorem*{thm}{Theorem} % do not number theorems
+\newtheorem*{Def}{Definition} % do not number definitions
+\newtheorem*{Eg}{Example} % do not number examples
+
+\begin{document}
+
+%----------------------------------------------------------------------------------------
+%	BOOK INFORMATION
+%----------------------------------------------------------------------------------------
+
+\titlehead{some notes of mine}
+\title[Template for the {\normalfont\texttt{kaobook}} Class]{%
+hejohns' notes}
+\author[hejohns]{hejohns}
+\date{\today}
+\publishers{made with kaobook \\ set in EB Garamond}
+
+%----------------------------------------------------------------------------------------
+
+\frontmatter % Denotes the start of the pre-document content, uses roman numerals
+
+%----------------------------------------------------------------------------------------
+%	COPYRIGHT PAGE
+%----------------------------------------------------------------------------------------
+
+\makeatletter
+\uppertitleback{\@titlehead} % Header
+
+\lowertitleback{
+	\textbf{Disclaimer} \\
+	You can edit this page to suit your needs. For instance, here we have a no copyright statement, a colophon and some other information. This page is based on the corresponding page of Ken Arroyo Ohori's thesis, with minimal changes.
+	
+	\medskip
+	
+	\textbf{No copyright} \\
+	\cczero\ This book is released into the public domain using the CC0 code. To the extent possible under law, I waive all copyright and related or neighbouring rights to this work.
+	
+	To view a copy of the CC0 code, visit: \\\url{http://creativecommons.org/publicdomain/zero/1.0/}
+	
+	\medskip
+	
+	\textbf{Colophon} \\
+	This document was typeset with the help of \href{https://sourceforge.net/projects/koma-script/}{\KOMAScript} and \href{https://www.latex-project.org/}{\LaTeX} using the \href{https://github.com/fmarotta/kaobook/}{kaobook} class.
+	
+	\medskip
+	
+	\textbf{Publisher} \\
+	First printed in May 2019 by \@publishers
+}
+\makeatother
+
+%----------------------------------------------------------------------------------------
+%	DEDICATION
+%----------------------------------------------------------------------------------------
+
+% NOTE: keeping this here to preserve minimal_book formatting
+%\dedication{
+%	The harmony of the world is made manifest in Form and Number, and the heart and soul and all the poetry of Natural Philosophy are embodied in the concept of mathematical beauty.\\
+%	\flushright -- D'Arcy Wentworth Thompson
+%}
+
+%----------------------------------------------------------------------------------------
+%	OUTPUT TITLE PAGE AND PREVIOUS
+%----------------------------------------------------------------------------------------
+
+% Note that \maketitle outputs the pages before here
+\maketitle
+
+%----------------------------------------------------------------------------------------
+%	PREFACE
+%----------------------------------------------------------------------------------------
+
+%\chapter*{Preface}
+%
+%\blindtext
+
+%----------------------------------------------------------------------------------------
+%	TABLE OF CONTENTS & LIST OF FIGURES/TABLES
+%----------------------------------------------------------------------------------------
+
+\begingroup % Local scope for the following commands
+
+% Define the style for the TOC, LOF, and LOT
+%\setstretch{1} % Uncomment to modify line spacing in the ToC
+%\hypersetup{linkcolor=blue} % Uncomment to set the colour of links in the ToC
+\setlength{\textheight}{230\vscale} % Manually adjust the height of the ToC pages
+
+% Turn on compatibility mode for the etoc package
+\etocstandarddisplaystyle % "toc display" as if etoc was not loaded
+\etocstandardlines % "toc lines as if etoc was not loaded
+
+\tableofcontents % Output the table of contents
+
+\listoffigures % Output the list of figures
+
+% Comment both of the following lines to have the LOF and the LOT on different pages
+\let\cleardoublepage\bigskip
+\let\clearpage\bigskip
+
+\listoftables % Output the list of tables
+
+\endgroup
+
+%----------------------------------------------------------------------------------------
+%	MAIN BODY
+%----------------------------------------------------------------------------------------
+
+\mainmatter % Denotes the start of the main document content, resets page numbering and uses arabic numbers
+\setchapterstyle{kao} % Choose the default chapter heading style
+
+\chapter{Papers/Articles}
+\Paper[tags={computability,history},date=2022-12-17]{2012}{Soare}{Formalism and intuition in computability}
+up to p.9
+
+f
+\Paper[tags={logic, pl}]{2008}{Zeilberger}{On the Unity of Duality}
+    Punchline: evaluation strategies (CBV/CBN) are type-level concepts, not language level, and the same language can have both CBV and CBN types.
+
+    Paper starts with a proof theoretic analysis of Dummett
+    to build the concept of polarity\sidenote{\emph{this paper's notion of polarity}, at least}
+    and how this sharpens the concept of types\sidenote{in the colloquial sense} of evidence/calling convention
+    as part of the definition of logical symbols/types in programming languages.
+    TODO: write a proper review… after finishing the paper
+
+    Presented at W23 UMich MPLSE reading group.
+    \attachfile{../../23w/rg/zeilberger/slides.pdf}
+\Paper[tags={logic,computability,history}]{1981}{Kleene}{Origins of recursive function theory}
+    need to read last ~10 pages
+
+    nice review by Steward Shapiro, 1990
+
+    λ-defineable = Church,
+    recursive = Gödel, Herbrand,
+    computable = Turing,
+
+    (although until 193?, recursive $↦$ primitive recursive, for Gödel,
+    now recursive $↦$ Herbrand-Gödel general recursive)
+\chapter{Book Reviews}
+\Book[]{1910,1995}{Makiko Nakano}{Makiko's Diary}
+    Translated by Kazuko Smith
+
+    sticky rice (desserts) = ½sticky rice + ½normal
+\Book[]{194?}{Osamu Dazai}{Hammering?}
+    Translated by TODO: name of translator,
+    in TODO: name of collection
+    (NOTE: at library)
+
+    A short story of the \textit{Setting Sun}, \textit{Human} postwar era according to the introduction.
+    9/10, for no particular reason.
+\Book[]{1977,1984}{Joe Stoy}{Denotational Semantics}
+    The middle part is good.
+    People say Stoy's DS is antiquated. Or to just read \textit{Datatypes as Lattices}.
+    It certainly shows its age, but the middle chunk is a nice no-frills (no topology) description of Scott semantics.
+    The only really introductory resource, and the only place that actually spells out Scott's (enumeration operator) $P_ω$ graph model-- all relativized to ``I've seen".
+
+    The beginning is a bunch of basic lambda calculus setup.
+    It's not bad.
+    I quite like the little part on the first or second page about erroneous past attempts at defining substitution.
+    But the setup is geared for those who haven't seen lambda calculus before,
+    to motivate the rest of the book.
+    If it's the nᵗʰ time you've seen it, there's not much to gain and it's quite long ($\sim$80 pages iirc!).
+
+    The last chunk is on semantics of ALGOL or whatever.
+    Haven't read it and don't plan to.
+\chapter{Presentations/Lectures}
+\Video[]{2007}{Bryan Cantrill}{Dtrace}{https://www.youtube.com/watch?v=6chLw2aodYQ}
+    A
+\chapter{Dictionary}
+\Dict[tags={acronyms},date=2022-12-21]{AFAI*}
+    As Far As I (Can Tell / Know / …)
+\Dict[tags={logic,computability},date=2022-12-18]{Craig's Trick}
+    \begin{thm}[Craig's Trick]
+        \marginnote{%
+            So ce theories are just as effective as computable ones,
+            which is good news for axiom schemas.
+            A priori, it's not clear that theories w/ axiom schemas are as effective
+            as finitely axiomatizable ones,
+            but intuitively, axiom schemas are of the same character,
+            are ``easily checkable".
+            Craig's trick formally grounds this.
+        }
+        \marginnote{%
+            eg $PA$ is as effective as $PA^-$.
+            (although $PA^-$ has nice utility for the Entscheidungsproblem.)
+        }
+        From Mathew (MATH 684):
+        $S$ ce set of sentences $⟹ ∃S^*.S^*$ computable $∧$ they have the same theory.
+
+        (my terminology) a theory is computable $⟺$ it is ce
+        \sidenote{…sentences up to logical equivalence}
+
+        ie a theory is computably axiomatized $⟺$ it is computably enumerably axiomatized
+    \end{thm}
+    \begin{proof}
+        \marginnote{%
+            Wikipedia has a similar sketch.
+        }
+        MATH 684:
+        $S$ ce, so you only have a listing of the sentences.
+        We can make it strictly monotonic by relisting,
+        but by adding a bunch of tautological noise or padding to each sentence
+        (say, by conjuncting tautologies, assuming eg Gödel's prime factorization encoding)
+        st the Gödel number is much larger.
+        (Each sentence is relisted logically equivalently.)
+        \marginnote{%
+            Somehow the proof itself doesn't feel intuitive,
+            but the ``intended use" of the theorem \emph{is}.
+        }
+    \end{proof}
+
+    \See Theory
+\Dict[tags={order},date=2022-12-21]{Complete Lattice}
+    \begin{Def}[Complete Lattice]
+        TFAE
+        \begin{itemize}
+            \item lattice w/ all joins and meets $⟹ $
+            \item lattice w/ all joins, meets, top, bottom
+            \item lattice w/ all joins
+                \sidenote{%
+                    People tend to say that the reals are ``\emph{the} complete ordered field",
+                    \footnotemark
+                    in the sense that every bounded (above) set has a supremum.
+                    Which implies that every bounded (below) set has a infimum.
+                    (NOTE: ``has" has a very specific meaning that everyone learns to live with.)
+                }
+                \footnotetext{TODO: apparently the ambiguity of ``complete" makes a difference,
+                but afaik the following is itself correct.}
+        \end{itemize}
+
+        \See Thin Yoneda Embedding
+    \end{Def}
+\Dict[tags={logic,computability}]{Effective}
+    An \Index{informal notion}.
+
+    I typically use ``effective" to mean alt.
+    \begin{itemize}
+        \item ``morally computable"
+        \item ``probably computable, but then I'd have to actually check"
+    \end{itemize}
+\Dict[tags={personal terminology}]{Emotion}
+    I use ``emotionally" similarly to ``intuitively" or ``morally",
+    but ``emotionally" has more to do with the gut feeling.
+    Something that is pre-, or maybe post-, or maybe anti-, rational.
+
+    \See Informal Notion
+\Dict[tags={logic,computability},date=2022-12-18]{Enumeration Operator}
+    \marginnote{From Rogers' 1967 \textit{Theory of Recursive Functions}.}
+    \marginnote{Stoy notes that the ``finite approximation" requirement on
+    Scott-continuous functions is ``very close to Rogers' notion of Enumeration Reducibility." (p. 100)}
+    \begin{Def}[Enumeration Operator]
+        \marginnote{%
+            An archetypical example:
+            In Gödel's incompleteness theorems,
+            each computable enumeration of a theory (my sense) gives rise to
+            an enumeration of the theory (the deductive closure).
+            In Miller's terms,
+            there is the ``deducibility operator" $D$ that gives for each axiom set $B$,
+            $D(B)$, the set of consequences.
+        }
+        Each enumeration reduction witness $z$ and $B$ determine the $A$,
+        so each $z$ determines a enumeration operator $Φ_z : 2^ω → 2^ω$.
+
+        ie $Φ_z(B) = A ⟺ A ≤_e X$ witnessed by $z$.
+
+        $A ≡_e B ⟺ A ≤_e B ∧ B ≤_e A$
+    \end{Def}
+    \begin{thm}
+        \marginnote{I'm thinking of the deducibility operator the whole time.}
+        \begin{itemize}
+            \item[]
+            \item enumeration operators compose, by inspection
+            \item $A ⊆ B ⟹ Φ(A) ⊆ Φ(B)$ (monotonicity)
+            \item $x ∈ Φ(B) ⟹ ∃C.C \text{ finite } ∧ C ⊆ B ∧ x ∈ Φ(C)$ (continuity)
+            \sidenote{which I'd call compactness}
+        \end{itemize}
+    \end{thm}
+
+    \See Scott semantics, Dana Scott's graph model of λ-calculus
+\Dict[tags={logic,computability},date=2022-12-18]{Enumeration Reducibility}
+    \marginnote[-2.7cm]{From Rogers' 1967 \textit{Theory of Recursive Functions}.}
+    \begin{Def}[Enumeration Reduc(tion/ible)]
+        \marginnote[-2.8cm]{%
+            This definition is not as nice as (many-)one or Turing reduction,
+            but the idea is that we want to
+            ``effectively list $A$ using any listing (computable or not) of $B$".
+            Note that enumeration reductions ``only use positive information about $B$,
+            and produce only positive information about $A$;
+            whereas Turing reductions use and produce both positive and negative information."
+            (paraphrased from the introduction to Russell Miller's \textit{Non-coding Enumeration Operators}.)
+        }
+        $A ≤_e B ⟺ ∃z.∀x.x ∈ A ↔ ∃u.⟨x,y⟩ ∈ W_z ∧ D_u ⊆ B$
+
+        where $z$ is the Gödel code of the reduction witness,
+        and $D_u$ is the finite set associated with $u$ as a canonical index (ie a tuple).
+        \sidenote{%
+            The idea w/ $u$ is that to list $A$ while watching elements enter $B$,
+            you should only need (to see) a finite amount of $B$ to list a particular element $x ∈ A$.
+        }
+    \end{Def}
+    Rogers' (really simple) examples:
+    \begin{itemize}
+        \item $\{2n | n ∈ ω\} ≤_e ω$
+        \item $A$ ce $⟹$ $∀B.A ≤_e B$
+    \end{itemize}
+
+    \See Enumeration Operator
+\Dict[tags={logic,λ-calculus},date=2022-12-18]{Dana Scott's Graph Model}
+    \begin{Def}
+        \begin{align*}
+            ⟦λx.⟧ &:=  \\
+            ⟦e_1 e_2⟧ &:= 
+        \end{align*}
+    \end{Def}
+
+    \See Enumeration Operator
+\Dict[tags={logic},date=2022-12-17]{Herbrand's Theorem}
+    TODO: convert notes from Prof. Blass' November seminar
+    \Index{Herbrand's Theorem}
+\Dict[]{Informal Notion}
+    alt.
+    \begin{itemize}
+        \item a formal notion probably applies, but then I'd have to actually check
+        \item the formal notion doesn't quite emotionally capture the concept
+    \end{itemize}
+    \begin{Eg}
+        \begin{itemize}
+            \item[]
+            \item effective v. λ-definable, recursive, computable, …
+        \end{itemize}
+    \end{Eg}
+\Dict[tags={logic},date=2022-12-19]{Knaster-Tarski}
+    \begin{thm}[Knaster-Tarski Fixpoint Theorem]
+        \marginnote{%
+            This theorem has many statements, and this is the easiest for me to remember.
+            The complete lattice is often a powerset lattice.
+        }
+        Every monotone function on a complete lattice has a complete lattice of fixpoints.
+    \end{thm}
+    \begin{proof}
+        Widely available.
+    \end{proof}
+    \begin{Eg}
+        \begin{itemize}
+            \item[]
+            \item The deducibility operator is a monotone function on sets of sentences.
+                \sidenote{For simplicity, assume everything is about-- and still true about-- a fixed language of arithmetic.}
+                The bottom (least) fixpoint is the (deductively closed) empty theory.
+                The top (greatest) fixpoint is the inconsistent theory, ie the set of all sentences.
+                Consistency of the empty theory
+                (by Gentzen's original cut elimination, or by existence of a model)
+                says this complete lattice is nontrivial.
+
+                Any consistent, computably axiomatizable (deductively closed) theory that proves more than the empty theory
+                is an intermediate fixpoint-- eg PA.
+                Incompleteness says there is no intermediate fixpoint above PA that is complete,
+                but there are at least $2^{ℵ_0}$ intermediate fixpoints above PA where we keep adding $Con(T)$ or $¬Con(T)$.
+                \sidenote{Are there complete intermediate fixpoints?}
+        \end{itemize}
+    \end{Eg}
+
+    \See Enumeration Operator, Dana Scott's Graph Model
+\Dict{Locus Solum}
+    This is my version of Girard's dictionary.
+
+    Also afaik the most Girard paper there is
+\Dict{Desert Landscapes}
+    \textquote[Quine]{A taste for desert landscapes}
+    \marginnote{From Jamie's seminar.}
+    \marginnote{TODO: move this to alphabetical order}
+\Dict{Scrub}
+    \marginnote{TODO: move this to alphabetical order}
+    A word that refers to quickly jumping through a video playback.
+    I liberally extend its usage.
+\Dict{Logical Axioms}
+    Sometimes, you just take all propositional tautologies as axioms.
+    \marginnote{This sort of pattern frequently occurs:
+    primitive recursive functions in Gödel's \Index{system T}, …}
+    \begin{Eg}
+        \begin{itemize}
+            \item[]
+            \item in Brian Chellas' (very, but good if you scrub) introduction to modal logic
+            \item Mathew's MATH 681, described as an option in Hilbert-style proof systems of FOL
+        \end{itemize}
+    \end{Eg}
+    If the axioms are (``easily") computable,
+    since you could just check the axioms with a computer,
+    no need for \Index{desert landscapes}.
+\Dict{PA}
+    Peano Arithmetic w/ induction.
+    $PA^-$ := PA ∖ induction
+\Dict{Realizability}
+    This is how we can attach beamer presentations
+    \attachfile{../../22f/rg/pfenning-davies/slides.pdf}
+\Dict[tags={logic},date=2022-12-18]{Theory}
+    An unfortunately ambiguous term,
+    but you can usually figure it out from context,
+    if it really matters.
+
+    I tend to use ``Theory" to just mean a set of sentences,
+    as in the $Γ$ in the sequent $Γ ⊢ $.
+    So I see a finite set for ``the theory of groups",
+    and a finite set unioned w/ a schema for ``Peano Arithmetic".
+    (and the empty set for the Entscheidungsproblem.)
+    Sometimes, people mean a deductively closed set of sentences.
+\Dict[tags={acronyms},date=2022-12-21]{TFAE}
+    The Following Are Equivalent
+
+    When there are multiple characterizations of the same thing.
+    Typically followed by a bullet list.
+\Dict[tags={category theory}]{Universal Property}
+    NOTE: this is going to be in constant flux until I finally start to understand category theory…
+
+    A smattering:
+    \marginnote{%
+        afaik this is an \Index{informal notion}.
+        Things defined by universal properties
+        should automatically be respected by lower level
+        mappings on the base structure,
+        that respect the lower level base structure.
+        Except not really.
+        \footnotemark
+    }
+    \footnotetext{not at all how I want to phrase this, but I'm still trying to figure out what I mean}
+    \begin{itemize}
+        \item fully faithful embeddings \emph{reflect} limits and colimits,
+            but don't in general \emph{preserve} limits/colimts.
+            \footnote{%
+                The Yoneda embedding preserves limits though.
+                TODO: why? something something RAPL
+            }
+            \sidenote{%
+                Since terminal cones won't necessarily still be Terminal,
+                and initial cocones won't necessarily still be initial.
+                eg take the complete lattice with two atoms $P,Q$ st
+                $P∨Q < ⊤$.
+                When you take the thin Yoneda embedding,
+                $Y(P) ∨ Y(Q) = \{⊥, P\} ∪ \{⊥, Q\} = \{⊥, P, Q\}$,
+                but $Y(P ∨ Q) = \{⊥, P, Q, P ∨ Q\}$
+            }
+
+            You wanted the universal property to give you preservation,
+            but you'll have to settle w/ reflection.
+    \end{itemize}
+    \marginnote{%
+        TODO: how does Yoneda tie in?
+    }
+\Dict[tags={order},date=2022-12-21]{Thin Yoneda Embedding}
+    \begin{thm}[see Stoy,\textit{Denotational Semantics} 6.29. Theorem.]
+        \marginnote{NOTE: re name: iirc this is mentioned in Awodey in the Yoneda chapter}
+        Every partial order can be embedded in a complete lattice.
+        \marginnote{%
+            The partial order is often a lattice already.
+            meets are preserved but not necessarily joins.
+            TODO:
+            %afaik, the lattice structure is also respected
+            %\emph{because} join, meet, …, are defined by universal properties.
+        }
+        \marginnote{%
+            A nice example from Stoy (starting $∼$p.89): (everything standard $≤$ ordering)
+            $\mathbb{Q}$ is a partial order.
+            \footnotemark
+            $\mathbb{Q}$ can be completed
+            by adding $⊤ = +∞, ⊥ = -∞$
+            and taking Dedekind cuts.
+        }
+        \footnotetext{actually $\mathbb{Q}$ is a non-empty total order, thus a lattice,
+        but for the theorem statement, we'll describe it this way.}
+    \end{thm}
+    \begin{proof}
+        TFAE (morally)
+        \begin{itemize}
+            \item The presheaf category in the Yoneda embedding has all limits and colimits.
+            \item The Yoneda embedding of a thin category \emph{is} the powerset. TODO: how to make this more precise? How do you compose the embedding?
+            \item Dedekind cuts.
+                
+            ie map each object to the downards closure (set of lower objects).
+            This is a (fully faithful) embedding into the powerset lattice.
+        \end{itemize}
+    \end{proof}
+
+    \See Complete Lattice, Universal Property
+\chapter{Miniatures}
+    Things I'm interested in understanding
+    that I need to play the long con for.
+    \section{apropos \Index{system T}, system F, logical relations}
+        reminder: system T is another name for the primitive recursive functionals of finite type--
+        aka a simply typed (language w/) primitive recursive combinators.
+        The recursion combinator at higher types extends system T
+        to a large subset of the computable functions.
+
+        The story starts w/ \Index{Proofs and Types}.
+
+        Girard presents logical relations (for strong normalization)
+        first for STLC, then system T, then system F.
+        As the languages get more expressive,
+        the logical relations need to be more clever.
+        Girard motivates the modifications at each language step
+        in part by appealing to ``logical strength considerations" (my phrase).
+
+        eg apparently strong normalization of system T $⟹$ consistency of PA,
+        so the proof of strong normalization of system T needs to go beyond PA formalization.
+        Apparently the original STLC proof was PA formalizable.
+        I can't remember off the top of my head what the modification is,
+        but iirc he appeals to the arithmetic hierarchy or something.
+        \sidenote{TODO: fill this in.}
+        And similarly, apparently the system T proof is formalizable
+        in second order PA,
+        so Girard introduces reducibility candidates for the system F proof,
+        which will probably be a long time until I understand why reducibility candidates
+        aren't formalizable in second order PA.
+
+        To start filling in these details,
+        a more thorough understanding of system T is required.
+        First, all primitive recursive functions are expressible in system T
+        by definition,
+        but how much does recursion at higher types get you?
+        Apparently the class of functions expressible in system T is exactly
+        the computable functions provably total in PA.
+        \begin{itemize}
+            \item[easy?] I don't actually understand what provably total means exactly.
+            \item[hard?] the forwards direction is sketched in Proofs and Types.
+                Girard doesn't prove the backwards,
+                instead saying that the proof for system F is more delicate
+                and does that instead… Apparently the Avigad/Fefferman article has it though.
+            \item[??] So how does PRA at higher types end up giving you Con(PA)??
+                (or rephrased, SN(T) $⟹$ Con(PA))
+                This seems extremely surprising from the outside.
+                I think this is exactly the dialectica interpreation,
+                so I'll have to actually read that first.
+                There's a stack overflow post about this somewhere.
+            \item[koan] I don't really care for primitive recursive functions
+                and PRA much. Too low level.
+                But is there a more intuitive way to see how PRA with higher types
+                somehow says something about PA?
+                Again, maybe the answer is just read the dialectica interpretation.
+        \end{itemize}
+
+        Related to this,
+        I thought understanding realizability and Gödel's dialectica interpretation
+        would clear some of the fog I have about logical relations.
+
+        Some resources: 
+        Avigad's new textbook chapter 14 (although he references earlier chapters,
+        so I've had to read 13, parts of 8 or something, …),
+        Avigad/Fefferman's handbook of proof theory article,
+        Troelstra's preface to Gödel 1958 in the collected works,
+        Proofs and Types,
+
+%\pagelayout{wide} % No margins
+%\addpart{Title of the Part}
+%\pagelayout{margin} % Restore margins
+%
+%
+%\appendix % From here onwards, chapters are numbered with letters, as is the appendix convention
+%
+%\pagelayout{wide} % No margins
+%\addpart{Appendix}
+%\pagelayout{margin} % Restore margins
+%
+%\chapter{Some more blindtext}
+%
+%\blindtext
+
+%----------------------------------------------------------------------------------------
+
+\backmatter % Denotes the end of the main document content
+\setchapterstyle{plain} % Output plain chapters from this point onwards
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAPHY
+%----------------------------------------------------------------------------------------
+
+% The bibliography needs to be compiled with biber using your LaTeX editor, or on the command line with 'biber main' from the template directory
+
+\defbibnote{bibnote}{Here are the references in citation order.\par\bigskip} % Prepend this text to the bibliography
+\printbibliography[heading=bibintoc, title=Bibliography, prenote=bibnote] % Add the bibliography heading to the ToC, set the title of the bibliography and output the bibliography note
+
+%----------------------------------------------------------------------------------------
+%	INDEX
+%----------------------------------------------------------------------------------------
+
+% The index needs to be compiled on the command line with 'makeindex main' from the template directory
+
+\printindex % Output the index
+
+\end{document}
